@@ -210,16 +210,18 @@ Let's add a new tile type to your map, `@`. `@` represents a teleporter. There c
 This is handy for transportation, but bad news for your strategies. For example:
 
  * This is a valid, solvable map.
+   
    ```
    ......#......
    .@.o..#..*.@.
    ......#......
    ```
  * The shortest path on this map isn't a straight line from start to end.
- ```
- ..............
- .@.o......*.@.
- ..............
- ```
+   
+   ```
+   ..............
+   .@.o......*.@.
+   ..............
+   ```
 
 Update your A\* implementation to handle teleportation correctly.

@@ -161,18 +161,20 @@ We're going to add one more strategy, an implementation of the [A\* pathfinding 
 
 As a pathfinding algorithm, A\* optimizes for both efficient search _and_ shortest path. It takes into account not just the distance from the goal, as we have been doing, but the distance from the origin as well.
 
-All you need to do to implement A\* is update how you calculate your priority value. Your priority function is now of the form `f(x) = g(x) + h(x)` where:
+To implement A\*, you need to update how you calculate your priority value. Your priority function is now of the form `f(x) = g(x) + h(x)` where:
 
  * `h` your distance heuristic estimating the distance between `x` and your goal
- * `g` is the known distance between `x` and the start point
+ * `g` is the distance between `x` and the start point based on the current paths you have discovered thus far. In other words, `g` is not an _estimation_ like your distance heuristic, it's the path you actually have from start to the current tile `x`.
 
-A few things to consider:
+Also note that:
 
- * Refer to the above [A* Intro](http://www.redblobgames.com/pathfinding/a-star/introduction.html#astar)
- * A\* may re-explore tiles, this is purposeful. If the exploration finds a new, _shorter_ path to a given tile it needs to update the distance cost and thus the priority of the tile in the search.
+ * A\* may re-explore tiles, this is purposeful. If the exploration finds a new, _shorter_ path to a given tile it needs to update the distance cost and thus the priority of the tile in the search. This is different from implementations like DFS, where skipping explored nodes is actually required to prevent an infinite loop (why?).
  * The A\* Intro article mentions `graph.cost` in the code examples. For our purposes, assume `graph.cost` is always 1.
+ * Your A\* strategy may be similar in parts, but the approach is different enough that you should write it as a standalone strategy first before attempting to DRY it up in any way.
+ 
+Refer to the above [A* Intro](http://www.redblobgames.com/pathfinding/a-star/introduction.html#astar) for more detail on the algorithm itself.
 
-  Why? In a more advanced map with varying terrain difficulties this function would calculate the cost of moving from, say, "plains" to "mountains". Our map is flat, so the cost to move between tiles is constant.
+Why? In a more advanced map with varying terrain difficulties this function would calculate the cost of moving from, say, "plains" to "mountains". Our map is flat, so the cost to move between tiles is constant.
 
 When you're finished, run your A\* strategy against the same map above. It _should_ perform much better than the other strategies. Your results should look something like this:
 
@@ -210,16 +212,18 @@ Let's add a new tile type to your map, `@`. `@` represents a teleporter. There c
 This is handy for transportation, but bad news for your strategies. For example:
 
  * This is a valid, solvable map.
+   
    ```
    ......#......
    .@.o..#..*.@.
    ......#......
    ```
  * The shortest path on this map isn't a straight line from start to end.
- ```
- ..............
- .@.o......*.@.
- ..............
- ```
+   
+   ```
+   ..............
+   .@.o......*.@.
+   ..............
+   ```
 
 Update your A\* implementation to handle teleportation correctly.

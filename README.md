@@ -164,7 +164,7 @@ As a pathfinding algorithm, A\* optimizes for both efficient search _and_ shorte
 To implement A\*, you need to update how you calculate your priority value. Your priority function is now of the form `f(x) = g(x) + h(x)` where:
 
  * `h` your distance heuristic estimating the distance between `x` and your goal
- * `g` is the known distance between `x` and the start point
+ * `g` is the distance between `x` and the start point based on the current paths you have discovered thus far. In other words, `g` is not an _estimation_ like your distance heuristic, it's the path you actually have from start to the current tile `x`.
 
 Also note that:
 

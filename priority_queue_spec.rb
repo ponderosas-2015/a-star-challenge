@@ -14,12 +14,13 @@ describe PriorityQueue do
   describe '#add(element, priority)' do
     it 'Add a new element to the priority_queue with a priority that is an integer value' do
       priority_queue.add(element, 1)
-      expect(priority_queue.peel).to eq element
+      expect(priority_queue.pull).to eq element
     end
     it 'Should not add an duplicate element to the priority_queue, but should update its priority' do
       priority_queue.add(element, 1)
       priority_queue.add(element, 1)
-      expect(priority_queue.peel).to eq element
+      priority_queue.pull
+      expect(priority_queue.empty?).to be true
     end
   end
 

@@ -3,9 +3,19 @@ require_relative 'maze_solver'
 require_relative 'queue'
 require_relative 'stack'
 
+def get_strategy(s)
+  case s
+  when "bfs" || "BFS"
+    Queue
+  when "dfs" || "DFS"
+    Stack
+  else
+    Queue
+  end
+end
+
+maze = ARGV.first || "map.1.txt"
+strategy = get_strategy(ARGV[1])
 # DRIVER CODE
-maze = Maze.new("map.4.txt")
-strategy = Queue
 maze_solver = MazeSolver.new(maze, strategy)
-solvable = maze_solver.solve! ? "SOLVABLE!" : "UNSOLVABLE"
-puts solvable
+maze_solver.solve!

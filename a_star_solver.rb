@@ -1,3 +1,5 @@
+require_relative "priority_queue"
+
 class AStarSolver
   START = "o"
   WALL = "#"
@@ -40,28 +42,53 @@ class AStarSolver
     print CLEAR_SCREEN
     puts @map
     puts "Steps: #{steps}"
-    sleep(0.01)
+    sleep(0.05)
+  end
+
+  def row_column(index)
+    row = index/@width
+    column = index % @width
+    [row, column]
+  end
+
+  def manhattan_distance(index)
+    index_row, index_column = row_column(index)
+    target_row, target_column = row_column(@target)
+    (index_row - target_row).abs + (index_column - target_column).abs
+  end
+
+  def bfs?
+    @strategy == "bfs"
   end
 
   def search
     steps = 0
-    queue_stack = []
-    queue_stack.push(@start)
     came_from = {}
-    while !queue_stack.empty?
-      if @strategy == "bfs"
-        current_index = queue_stack.shift
+    if bfs?
+      stack_queue = PriorityQueue.new
+      stack_queue.add(@start, manhattan_distance(@start))
+    else
+      stack_queue = []
+      stack_queue.push(@start)
+    end
+    while !stack_queue.empty?
+      if bfs?
+        current_index = stack_queue.pull
       else
-        current_index = queue_stack.pop
+        current_index = stack_queue.pop
       end
       if valid?(current_index)
         return came_from if @map[current_index] == TARGET
         @map[current_index] = VISITED
-        print_map(current_index, steps)
         steps += 1
+        print_map(current_index, steps)
         neighbors(current_index).each do |neighbor|
           if !came_from[neighbor]
-            queue_stack.push(neighbor)
+            if bfs?
+              stack_queue.add(neighbor, manhattan_distance(neighbor))
+            else
+              stack_queue.push(neighbor)
+            end
             came_from[neighbor] = current_index
           end
         end
@@ -86,11 +113,13 @@ class AStarSolver
     path.each do |index|
       @original_map[index] = "x"
     end
-    return @original_map
+    return [@original_map, path.length]
   end
 
   def run!
-    puts final_path(search)
+    map, length = final_path(search)
+    puts map
+    puts "Path Length: #{length}"
   end
 
 end

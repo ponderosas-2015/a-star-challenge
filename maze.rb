@@ -12,7 +12,7 @@ class Maze
   def print_maze
     clear_screen
     puts @maze.join("\n")
-    sleep(0.1)
+    sleep(0.01)
   end
 
   def clear_screen

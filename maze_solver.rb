@@ -32,7 +32,7 @@ class MazeSolver
           @came_from[cell] = current if !@came_from.has_key?(cell)
         end
         @maze.mark_cell(current)
-        # @maze.print_maze
+        @maze.print_maze
       end
     end
     solved?(current) ? path_to(current) : print_unsolvable

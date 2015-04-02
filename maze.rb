@@ -4,7 +4,6 @@ class Maze
   AVAILABLE_CELL = "."
   WALL_CELL = "#"
   VISITED_CELL = "X"
-  SLEEP = 0.02
 
   def initialize(text_file)
     @text_file = text_file
@@ -13,12 +12,6 @@ class Maze
 
   def to_s
     @maze.join("\n")
-  end
-
-  def print_maze
-    clear_screen
-    puts self
-    sleep(SLEEP)
   end
 
   def reset!
@@ -67,8 +60,24 @@ class Maze
     @maze[cell.first][cell.last] == WALL_CELL
   end
 
-  def bottom_right
-    [@maze.length, @maze[0].length]
+  def find_edges(cell)
+    possible_edges(cell).select do |cell|
+      within_maze_bounds?(cell)
+    end
+  end
+
+  def possible_edges(cell)
+    row = cell.first
+    col = cell.last
+    [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
+  end
+
+  def manhattan_distance(cell, other_cell)
+    (cell.first - other_cell.first).abs + (cell.last - other_cell.last).abs
+  end
+
+  def distance_to_end(cell)
+    manhattan_distance(cell, self.end)
   end
 
   private

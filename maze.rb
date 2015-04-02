@@ -4,15 +4,25 @@ class Maze
   AVAILABLE_CELL = "."
   WALL_CELL = "#"
   VISITED_CELL = "X"
+  SLEEP = 0.02
 
   def initialize(text_file)
-    @maze = read(text_file)
+    @text_file = text_file
+    @maze = read(@text_file)
+  end
+
+  def to_s
+    @maze.join("\n")
   end
 
   def print_maze
     clear_screen
-    puts @maze.join("\n")
-    sleep(0.01)
+    puts self
+    sleep(SLEEP)
+  end
+
+  def reset!
+    @maze = read(@text_file)
   end
 
   def clear_screen
@@ -51,6 +61,14 @@ class Maze
   def available?(cell)
     @maze[cell.first][cell.last] == AVAILABLE_CELL ||
         @maze[cell.first][cell.last] == END_CELL
+  end
+
+  def wall?(cell)
+    @maze[cell.first][cell.last] == WALL_CELL
+  end
+
+  def bottom_right
+    [@maze.length, @maze[0].length]
   end
 
   private

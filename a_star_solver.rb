@@ -31,11 +31,15 @@ class AStarSolver
   end
 
   def neighbors(index)
-    left_index = index - 1
-    top_index = index - @width
     right_index = index + 1
     bottom_index = index + @width
-    [left_index, top_index, right_index, bottom_index]
+    left_index = index - 1
+    top_index = index - @width
+    [bottom_index, right_index, top_index, left_index]
+  end
+
+  def valid_neighbors(index)
+    neighbors(index).select { |neighbor| valid?(neighbor) }
   end
 
   def print_map(current_index, steps)
@@ -59,6 +63,32 @@ class AStarSolver
 
   def bfs?
     @strategy == "bfs"
+  end
+
+  def a_star
+    steps = 0
+    came_from = {}
+    cost_so_far = {}
+    priority_queue = PriorityQueue.new
+    priority_queue.add(@start, 0)
+    cost_so_far[@start] = 0
+    while !priority_queue.empty?
+      current_index = priority_queue.pull
+      return came_from if @map[current_index] == TARGET
+      new_cost = cost_so_far[current_index] + 1 #could take the slowness factor from the graph here but we're just doing a uniform map
+      steps += 1
+      @map[current_index] = VISITED
+      print_map(current_index, steps)
+      valid_neighbors(current_index).each do |neighbor|
+        if !cost_so_far.has_key?(neighbor) || new_cost < cost_so_far[neighbor]
+          cost_so_far[neighbor] = new_cost
+          priority = new_cost + manhattan_distance(neighbor)
+          priority_queue.add(neighbor, priority)
+          came_from[neighbor] = current_index
+        end
+      end
+    end
+    false
   end
 
   def search
@@ -117,7 +147,7 @@ class AStarSolver
   end
 
   def run!
-    map, length = final_path(search)
+    map, length = final_path(a_star)
     puts map
     puts "Path Length: #{length}"
   end

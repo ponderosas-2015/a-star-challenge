@@ -29,7 +29,7 @@ class Runner
     else
       shortest_route, length = result
       puts shortest_route
-      puts "Path Length: #{length}"
+      puts "Optimal Path Length: #{length}"
     end
   end
 

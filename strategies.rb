@@ -48,6 +48,56 @@ module Strategies
     result
   end
 
+  BFS = Proc.new do |map, *args|
+    print_map = PRINT_MAP
+    steps = 0
+    came_from = {}
+    frontier = []
+    frontier.push(map.start)
+    result = false
+    while !frontier.empty?
+      current_index = frontier.shift
+      if map.valid?(current_index)
+        result = map.final_path(came_from) if map.map_string[current_index] == TARGET
+        break if !result == false
+        steps += 1
+        map.map_string[current_index] = VISITED
+        print_map.call(map, steps)
+        map.neighbors(current_index).each do |neighbor|
+          if map.valid?(neighbor)
+            frontier.push(neighbor)
+            came_from[neighbor] = current_index
+          end
+        end
+      end
+    end
+    result
+  end
+
+  DFS = Proc.new do |map, *args|
+    print_map = PRINT_MAP
+    steps = 0
+    came_from = {}
+    frontier = []
+    frontier.push(map.start)
+    result = false
+    while !frontier.empty?
+      current_index = frontier.pop
+      if map.valid?(current_index)
+        result = map.final_path(came_from) if map.map_string[current_index] == TARGET
+        break if !result == false
+        steps += 1
+        map.map_string[current_index] = VISITED
+        print_map.call(map, steps)
+        map.neighbors(current_index).each do |neighbor|
+          frontier.push(neighbor)
+          came_from[neighbor] = current_index
+        end
+      end
+    end
+    result
+  end
+
   HEURISTIC = Proc.new do |map, *args|
     heuristic = MANHATTAN_DISTANCE
     print_map = PRINT_MAP

@@ -64,7 +64,7 @@ module Strategies
         map.map_string[current_index] = VISITED
         print_map.call(map, steps)
         map.neighbors(current_index).each do |neighbor|
-          if map.valid?(neighbor)
+          if map.valid?(neighbor) #why does it stop working without this??
             frontier.push(neighbor)
             came_from[neighbor] = current_index
           end
@@ -90,8 +90,10 @@ module Strategies
         map.map_string[current_index] = VISITED
         print_map.call(map, steps)
         map.neighbors(current_index).each do |neighbor|
-          frontier.push(neighbor)
-          came_from[neighbor] = current_index
+          if map.valid?(neighbor) #why does it stop working without this??
+            frontier.push(neighbor)
+            came_from[neighbor] = current_index
+          end
         end
       end
     end

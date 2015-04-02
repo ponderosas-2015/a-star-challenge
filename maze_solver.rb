@@ -43,6 +43,7 @@ class MazeSolver
 
   def print_unsolvable
     @maze.reset!
+    @maze.clear_screen
     puts @maze, "UNSOLVABLE"
   end
 

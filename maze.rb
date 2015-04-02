@@ -4,6 +4,7 @@ class Maze
   AVAILABLE_CELL = "."
   WALL_CELL = "#"
   VISITED_CELL = "X"
+  TELEPORT_CELL = "@"
 
   def initialize(text_file)
     @text_file = text_file
@@ -47,17 +48,36 @@ class Maze
     nil
   end
 
+  def find_all(character)
+    all = []
+    @maze.each.with_index do |row, row_index|
+      row.each_char.with_index do |char, col_index|
+        all << [row_index, col_index] if char == character
+      end
+    end
+    all
+  end
+
   def within_maze_bounds?(cell)
     cell.first >= 0 && cell.last >= 0 && cell.first < @maze.length && cell.last < @maze[cell.first].length
   end
 
   def available?(cell)
     @maze[cell.first][cell.last] == AVAILABLE_CELL ||
-        @maze[cell.first][cell.last] == END_CELL
+        @maze[cell.first][cell.last] == END_CELL ||
+        teleporter?(cell)
   end
 
   def wall?(cell)
     @maze[cell.first][cell.last] == WALL_CELL
+  end
+
+  def teleporter?(cell)
+    @maze[cell.first][cell.last] == TELEPORT_CELL
+  end
+
+  def teleporter_cells
+    find_all(TELEPORT_CELL)
   end
 
   def find_edges(cell)
@@ -67,9 +87,19 @@ class Maze
   end
 
   def possible_edges(cell)
-    row = cell.first
-    col = cell.last
-    [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
+    edges = []
+    if teleporter?(cell)
+      teleporter_cells.each do |tcell|
+        row = tcell.first
+        col = tcell.last
+        edges += [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
+      end
+    else
+      row = cell.first
+      col = cell.last
+      edges = [[row, col - 1], [row, col + 1], [row + 1, col], [row - 1, col]]
+    end
+    edges
   end
 
   def manhattan_distance(cell, other_cell)
@@ -77,7 +107,25 @@ class Maze
   end
 
   def distance_to_end(cell)
-    manhattan_distance(cell, self.end)
+    if teleporter_cells.empty?
+      manhattan_distance(cell, self.end)
+    else
+      [manhattan_distance(cell, self.end),
+       distance_to_closest_teleporter(cell) + teleporter_to_end
+      ].min
+    end
+  end
+
+  def teleporter_to_end
+    teleporter_cells.map { |tcell|
+      manhattan_distance(tcell, self.end)
+    }.min
+  end
+
+  def distance_to_closest_teleporter(cell)
+    teleporter_cells.map { |tcell|
+      manhattan_distance(tcell, cell)
+    }.min
   end
 
   private
